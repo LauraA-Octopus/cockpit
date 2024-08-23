@@ -53,7 +53,6 @@ from cockpit import events
 import cockpit.gui.guiUtils
 import cockpit.handlers.stagePositioner
 import cockpit.interfaces.stageMover
-import cockpit.util.logger
 import cockpit.util.threads
 import cockpit.util.userConfig
 

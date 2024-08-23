@@ -49,6 +49,7 @@
 ## ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ## POSSIBILITY OF SUCH DAMAGE.
 
+import logging
 import typing
 
 import numpy
@@ -61,9 +62,11 @@ from cockpit.gui.primitive import Primitive
 import cockpit.gui.dialogs.getNumberDialog
 import cockpit.interfaces
 import cockpit.interfaces.stageMover
-import cockpit.util.logger
 
 from cockpit.gui.macroStage import macroStageBase
+
+
+_logger = logging.getLogger(__name__)
 
 
 class _StagePositionEntryDialog(wx.Dialog):
@@ -395,7 +398,7 @@ class MacroStageXY(macroStageBase.MacroStageBase):
             # Draw direction of motion
             delta = motorPos - self.prevStagePosition[:2]
 
-            if sum(numpy.fabs(delta)) > macroStageBase.MIN_DELTA_TO_DISPLAY:
+            if sum(numpy.fabs(delta)) > self._min_delta_to_display:
                 self.drawArrow((motorPos[0]- self.offset[0],
                                 motorPos[1]+self.offset[1]), delta, (0, 0, 1),
                         arrowSize = self.maxExtent * .1,
@@ -437,8 +440,8 @@ class MacroStageXY(macroStageBase.MacroStageBase):
             # our stage position info.
             self.drawEvent.set()
         except Exception as e:
-            cockpit.util.logger.log.error("Exception drawing XY macro stage: %s", e)
-            cockpit.util.logger.log.error(traceback.format_exc())
+            _logger.error("Exception drawing XY macro stage: %s", e)
+            _logger.error(traceback.format_exc())
             self.shouldDraw = False
 
 

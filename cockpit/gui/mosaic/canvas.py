@@ -49,6 +49,8 @@
 ## ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ## POSSIBILITY OF SUCH DAMAGE.
 
+import logging
+
 import numpy
 from OpenGL.GL import *
 import traceback
@@ -57,12 +59,14 @@ import wx.glcanvas
 from cockpit import events
 from cockpit.gui.mosaic.tile import Tile, MegaTile
 import cockpit.util.datadoc
-import cockpit.util.logger
 import cockpit.util.threads
 import queue
 import time
 import numpy as np
 import wx.lib.newevent
+
+
+_logger = logging.getLogger(__name__)
 
 
 ProgressStartEvent, EVT_PROGRESS_START = wx.lib.newevent.NewEvent()
@@ -620,7 +624,11 @@ class MosaicCanvas(wx.glcanvas.GLCanvas):
         )
         if doc.imageArray.shape[2] > len(tileStats):
             # More images in the file than we have stats for.
-            cockpit.util.logger.log.warning("Loading mosaic with %d images; only have positioning information for %d." % (doc.imageArray.shape[2], len(tileStats)))
+            _logger.warning(
+                "Loading mosaic with %d images; only have positioning information for %d.",
+                doc.imageArray.shape[2],
+                len(tileStats),
+            )
         maxImages = min(doc.imageArray.shape[2], len(tileStats))
         for i in range(maxImages):
             image = doc.imageArray[0, 0, i]
@@ -633,7 +641,7 @@ class MosaicCanvas(wx.glcanvas.GLCanvas):
                 wx.MessageDialog(self.GetParent(),
                         "Failed to load line %d of file %s: %s.\n\nPlease see the logs for more details." % (i, filePath, e),
                         style = wx.ICON_INFORMATION | wx.OK).ShowModal()
-                cockpit.util.logger.log.error(traceback.format_exc())
+                _logger.error(traceback.format_exc())
                 wx.PostEvent(self.GetEventHandler(), ProgressEndEvent())
                 return
         # Wait until we've loaded all tiles or we go a full second without

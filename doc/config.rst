@@ -72,7 +72,13 @@ config-dir
   the last used settings.
 
 data-dir
-  Directory for the default location to save image data.
+
+  Directory for the default location to save image data.  This value
+  will expand environment variables and an initial tilde (`~`).  The
+  default value is `~/MUI_DATA`, i.e., on the user's home directory.
+  If you have a setup where each user has its own data directory on a
+  separate filesystem, you can use something like
+  `D:\cockpit-data\${USERNAME}` or `/srv/cockpit-data/${USER}`.
 
 depot-files
   List of files to use for the device depot.  See :ref:`depot-config`.
@@ -109,6 +115,13 @@ primitives
 
   where ``c x0 y0 radius`` defines a circle centred on ``x0, y0`` and
   ``r x0 y0 width height`` defines a rectangle centred on ``x0, y0``.
+
+min-delta-to-display
+
+  The macro stage window displays arrows when a stage is moving.  For
+  stages operating in closed-loop mode which are constantly correcting
+  their position this can be distracting.  This value sets the min
+  change of position to be displayed as movement.  Defaults to 0.01.
 
 
 .. TODO:: These options for the stage section are historical and a

@@ -44,6 +44,7 @@ For connection via a controller::
 """
 
 import collections.abc
+import logging
 import typing
 
 import Pyro4
@@ -62,13 +63,16 @@ import cockpit.util.colors
 import cockpit.util.userConfig
 import cockpit.util.threads
 import cockpit.util.listener
-import cockpit.util.logger
 from cockpit.util import valueLogger
 from cockpit.gui.device import SettingsEditor
 from cockpit.handlers.stagePositioner import PositionerHandler
 from cockpit.interfaces import stageMover
 import re
 from microscope import AxisLimits
+
+
+_logger = logging.getLogger(__name__)
+
 
 # Pseudo-enum to track whether device defaults in place.
 (DEFAULTS_NONE, DEFAULTS_PENDING, DEFAULTS_SENT) = range(3)
@@ -383,7 +387,7 @@ class MicroscopeFilter(MicroscopeBase):
             raise Exception(
                 "Missing 'filters' value for device '%s'" % self.name
             )
-        fdefs = [re.split(r':\s*|,\s*', f) for f in re.split('\n', fdefs) if f]
+        fdefs = [re.split(r':\s*|,\s*', f) for f in re.split(r'\n', fdefs) if f]
         self.filters = [cockpit.handlers.filterHandler.Filter(*f) for f in fdefs]
 
 
@@ -840,8 +844,7 @@ class DIOOutputWindow(wx.Frame):
     @cockpit.util.threads.callInMainThread
     def updateState(self,line = None,state = None):
         if (line is not None) and (state is not None):
-            cockpit.util.logger.log.debug("Line %d returned %s" %
-                                          (line,str(state)))
+            _logger.debug("Line %d returned %s", line, str(state))
             if (self.DIO.get_IO_state(line)):
                 #output button have names
                 self.lineToButton[line][1].SetLabel(self.DIO.labels[line])
